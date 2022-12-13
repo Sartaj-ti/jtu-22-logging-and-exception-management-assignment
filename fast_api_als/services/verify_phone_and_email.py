@@ -21,6 +21,7 @@ async def call_validation_service(url: str, topic: str, value: str, data: dict) 
 
     r = response.json()
     data[topic] = r
+    logger.info(f'{topic} validation data: {data}')
     
 
 async def verify_phone_and_email(email: str, phone_number: str) -> bool:
