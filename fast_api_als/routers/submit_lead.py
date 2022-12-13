@@ -38,7 +38,7 @@ async def submit(file: Request, apikey: APIKey = Depends(get_api_key)):
     
     if not db_helper_session.verify_api_key(apikey):
         # throw proper fastpi.HTTPException
-        pass
+        raise fastapi.HTTPException(status_code=404, detail='Wrong API key')
     
     body = await file.body()
     body = str(body, 'utf-8')
@@ -197,6 +197,8 @@ async def submit(file: Request, apikey: APIKey = Depends(get_api_key)):
             }
         }
         res = sqs_helper_session.send_message(message)
+        logger.info(f'response_body ACCEPTED') 
+        logger.info(f'{res} respose from message: {message}')
 
     else:
         message = {
@@ -211,8 +213,13 @@ async def submit(file: Request, apikey: APIKey = Depends(get_api_key)):
             }
         }
         res = sqs_helper_session.send_message(message)
+        logger.info(f'response_body not ACCEPTED') 
+        logger.info(f'{res} respose from message: {message}')
+        
     time_taken = (int(time.time() * 1000.0) - start)
 
     response_message = f"{result} Response Time : {time_taken} ms"
+    logger.info(response_message)
+
 
     return response_body
